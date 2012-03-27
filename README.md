@@ -9,7 +9,7 @@ JqGrid implementation for Symfony2.
 Installation
 ------------
 
-1. Add this bundle to your vendor/ dir
++ Add this bundle to your vendor/ dir
 
 Add the following lines in your deps file::
 
@@ -25,7 +25,7 @@ Add the following lines in your deps file::
 ./bin/vendors install
 ```
 
-2. Add the "EPS" namespace to your autoloader:
++ Add the "EPS" namespace to your autoloader:
 
 ```php
   <?php
@@ -36,7 +36,7 @@ Add the following lines in your deps file::
   ));
 ```
 
-3. Enable the bundle in the kernel
++ Enable the bundle in the kernel
 
 ```php
 <?php
@@ -51,7 +51,7 @@ Add the following lines in your deps file::
         }
 ```
 
-4. Add assets to your layout
++ Add assets to your layout
 
 JS
 bundles/epsjqgrid/js/i18n/grid.locale-fr.js
