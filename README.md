@@ -53,11 +53,13 @@ Add the following lines in your deps file::
 
 + Add assets to your layout
 
-JS
+**JS**
+
 bundles/epsjqgrid/js/i18n/grid.locale-fr.js
 bundles/epsjqgrid/js/jquery.jqGrid.min.js
 
-CSS
+**CSS**
+
 bundles/epsjqgrid/css/ui.jqgrid.css
 
 Grid example
