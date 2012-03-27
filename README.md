@@ -9,58 +9,60 @@ JqGrid implementation for Symfony2.
 Installation
 ------------
 
-+ Add this bundle to your vendor/ dir
+1. Add this bundle to your vendor/ dir
 
-Add the following lines in your deps file::
+  Add the following lines in your deps file:
 
-```
-[EPSJqGridBundle]
-  git=git://github.com/michelpa/JqGridBundle.git
-  target=/bundles/EPS/JqGridBundle
-```
+  ```
+  [EPSJqGridBundle]
+    git=git://github.com/michelpa/JqGridBundle.git
+    target=/bundles/EPS/JqGridBundle
+  ```
 
- Run the vendor script:
+  Run the vendor script:
 
-```
-./bin/vendors install
-```
+  ```
+  ./bin/vendors install
+  ```
 
-+ Add the "EPS" namespace to your autoloader:
 
-```php
+2. Add the "EPS" namespace to your autoloader:
+
+ ```php
+   <?php
+   // app/autoload.php
+   $loader->registerNamespaces(array(
+       'EPS' => __DIR__.'/../vendor/bundles',
+  // your other namespaces
+   ));
+
+  ```
+
+3. Enable the bundle in the kernel
+
+ ```php
   <?php
-  // app/autoload.php
-  $loader->registerNamespaces(array(
-      'EPS' => __DIR__.'/../vendor/bundles',
- // your other namespaces
-  ));
-```
+         // app/ApplicationKernel.php
+         public function registerBundles()
+         {
+             return array(
+                 // ...
+                 new EPS\JqGridBundle\JqGridBundle(),
+                 // ...
+             );
+         }
+ ```
 
-+ Enable the bundle in the kernel
+4. Add assets to your layout
 
-```php
-<?php
-        // app/ApplicationKernel.php
-        public function registerBundles()
-        {
-            return array(
-                // ...
-                new EPS\JqGridBundle\JqGridBundle(),
-                // ...
-            );
-        }
-```
+ **JS**
 
-+ Add assets to your layout
+ bundles/epsjqgrid/js/i18n/grid.locale-fr.js
+ bundles/epsjqgrid/js/jquery.jqGrid.min.js
 
-**JS**
+ **CSS**
 
-bundles/epsjqgrid/js/i18n/grid.locale-fr.js
-bundles/epsjqgrid/js/jquery.jqGrid.min.js
-
-**CSS**
-
-bundles/epsjqgrid/css/ui.jqgrid.css
+ bundles/epsjqgrid/css/ui.jqgrid.css
 
 Grid example
 ------------
