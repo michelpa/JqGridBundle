@@ -96,7 +96,7 @@ class MyController extends Controller {
         $qb = $em->createQueryBuilder()
                 ->from('EPSMyBundle:Comment', 'c')
                 ->leftJoin('c.post', 'p')
-                ->select('p.post_title, c.id, c.created);
+                ->select('p.post_title, c.id, c.created');
                 
 
         $posts = $em->getRepository('EPSLcpBundle:Post')->findBy(array('actif' => true));
