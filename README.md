@@ -9,39 +9,37 @@ JqGrid implementation for Symfony2.
 Installation
 ------------
 
-1. Add this bundle to your vendor/ dir
+1. **Add this bundle to your vendor/ dir**
 
-  Add the following lines in your deps file:
+    Add the following lines in your deps file:
 
-  ```
-  [EPSJqGridBundle]
-    git=git://github.com/michelpa/JqGridBundle.git
-    target=/bundles/EPS/JqGridBundle
-  ```
+    ```
+      [EPSJqGridBundle]
+        git=git://github.com/michelpa/JqGridBundle.git
+        target=/bundles/EPS/JqGridBundle
+    ```
 
-  Run the vendor script:
+    Run the vendor script:
 
-  ```
-  ./bin/vendors install
-  ```
+    ```
+      ./bin/vendors install
+    ```
 
+2. **Add the "EPS" namespace to your autoloader**
 
-2. Add the "EPS" namespace to your autoloader:
+    ```php
+       <?php
+       // app/autoload.php
+       $loader->registerNamespaces(array(
+           'EPS' => __DIR__.'/../vendor/bundles',
+       // your other namespaces
+       ));
+    ```
 
- ```php
-   <?php
-   // app/autoload.php
-   $loader->registerNamespaces(array(
-       'EPS' => __DIR__.'/../vendor/bundles',
-  // your other namespaces
-   ));
+3. **Enable the bundle in the kernel**
 
-  ```
-
-3. Enable the bundle in the kernel
-
- ```php
-  <?php
+    ```php
+      <?php
          // app/ApplicationKernel.php
          public function registerBundles()
          {
@@ -51,18 +49,18 @@ Installation
                  // ...
              );
          }
- ```
+    ```
 
-4. Add assets to your layout
+4. **Add assets to your layout**
 
- **JS**
+     *JS*
 
- bundles/epsjqgrid/js/i18n/grid.locale-fr.js
- bundles/epsjqgrid/js/jquery.jqGrid.min.js
+         bundles/epsjqgrid/js/i18n/grid.locale-fr.js
+         bundles/epsjqgrid/js/jquery.jqGrid.min.js
 
- **CSS**
+     *CSS*
 
- bundles/epsjqgrid/css/ui.jqgrid.css
+         bundles/epsjqgrid/css/ui.jqgrid.css
 
 Grid example
 ------------
