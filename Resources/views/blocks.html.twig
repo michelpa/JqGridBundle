@@ -1,0 +1,71 @@
+{% block gridjs %}
+{% spaceless %}
+<div id="{{grid.name|raw}}_wrapper" {% if grid.hideifempty %}style="display: none;"{% endif %}>
+    <table class="eps_jqgrid" id="{{grid.name|raw}}"></table>
+    <div id="pager_{{grid.name|raw}}"></div>
+    <hr/>
+</div>
+    
+    
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var $configs = $.extend({
+                minDate: new Date(2007, 0, 1),
+                maxDate: new Date(2017, 11, 31)
+            }, $.datepicker.regional['{{ grid.culture }}'], {
+                "dateFormat":"dd/mm/yy",
+                closeText: 'X',
+                showButtonPanel: true,
+                changeYear: true,
+                changeMonth: true,
+                onSelect: function(dateText, inst) {
+                        var $tmpid = $(this).closest('.ui-jqgrid-view').attr('id');
+                        var $gridid = $tmpid.substring(6);
+                        $('#'+$gridid)[0].triggerToolbar();
+                }
+        });
+        
+        datePick = function(elem)
+        {
+            jQuery(elem).datepicker($configs);
+        }
+        
+       
+        jQuery("#{{grid.name|raw}}").jqGrid({
+            url:'{{grid.getrouteurl}}',
+            {% if grid.hideifempty %}
+            gridComplete: function() {
+                var recs = parseInt($("#{{grid.name|raw}}").getGridParam("records"),10);
+                if (recs == 0) {
+                    $("#{{grid.name|raw}}_wrapper").hide();
+                }
+                else {
+                    $('#{{grid.name|raw}}_wrapper').show();
+                }
+            },
+            {% endif %}
+            colNames:[{{grid.columnsnames|raw}}], 
+            colModel:[ 
+                {{grid.columnscolmodel|raw}}
+            ], 
+            {{  grid.options|raw }}
+            {% if grid.caption != '' %}caption:"{{grid.caption}}", {% endif %}
+            pager: '#pager_{{grid.name|raw}}'
+        }); 
+        
+        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}',{view:true,search:false, edit:false,add:false,del:false});
+        jQuery("#{{grid.name|raw}}").navGrid("#pager_{{grid.name|raw}}").navSeparatorAdd("#pager_{{grid.name|raw}}", {sepclass : "ui-separator",sepcontent: ''}).navButtonAdd("#pager_{{grid.name|raw}}",{id : "resetSearch_{{grid.name|raw}}" ,caption:"", buttonicon:"ui-icon-home", onClickButton:null, position: "last", title:"Réinitialiser les filtres", cursor: "pointer"});
+        
+        jQuery("#{{grid.name|raw}}").jqGrid('filterToolbar',{stringResult:true, searchOnEnter:true, defaultSearch:"cn"});
+        
+        $("#resetSearch_{{grid.name|raw}}").click(function() {
+            jQuery("#{{grid.name|raw}}")[0].clearToolbar();
+        });
+        
+    
+
+        
+    }); 
+    </script>
+{% endspaceless %}
+{% endblock gridjs %}
