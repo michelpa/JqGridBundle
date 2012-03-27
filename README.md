@@ -133,11 +133,13 @@ class MyController extends Controller {
 
 ```
 ## View
-
+```twig
 {{jqgrid_js(mygrid)}}
-
+```
 ## Action column
 
 Action is managed by a specific twig template in which each value of the line is available in a variable named "ligne". In this definition it is "_testgridaction.html.twig"
 
+```twig
 <a href="#" onclick="alert('Whatever'); return false;"><span original-title="See detail"></span>{{ligne.post_title}}</a>
+```
