@@ -62,6 +62,14 @@ class Column {
         }
     }
 
+      public function getFieldHaving() {
+        if (array_key_exists('having', $this->colmodel)) {
+            return $this->colmodel['having'];
+        } else {
+            return false;
+        }
+    }
+    
     public function getFieldFormatter() {
         if (array_key_exists('formatter', $this->colmodel)) {
             return $this->colmodel['formatter'];
@@ -79,6 +87,7 @@ class Column {
         }
 
         unset($model['twig']);
+        unset($model['having']);
         unset($model['value']);
         unset($model['datepicker']);
 

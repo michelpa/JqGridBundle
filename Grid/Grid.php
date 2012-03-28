@@ -205,6 +205,10 @@ class Grid {
                                     $tmp = explode("/", $rule['data']);
                                     $date = $tmp[2] . "-" . $tmp[1] . "-" . $tmp[0];
                                     $this->qb->andWhere($c->getFieldIndex() . ' LIKE \'%' . $date . '%\'');
+                                } elseif ($c->getFieldHaving()) {
+                                    $this->qb->having($c->getFieldHaving() . " =  ?$paramnumber");
+                                    $this->qb->setParameter($paramnumber, $rule['data']);
+                                    $paramnumber++;
                                 } else {
                                     $this->qb->andWhere($c->getFieldIndex() . " LIKE  ?$paramnumber");
                                     $this->qb->setParameter($paramnumber, '%' . $rule['data'] . '%');
