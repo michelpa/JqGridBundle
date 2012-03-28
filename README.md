@@ -6,6 +6,9 @@ JqGrid implementation for Symfony2.
 
 **Compatibility**: Tested with Symfony 2.0.12
 
+[Full working demo](https://github.com/michelpa/demoJqGrid)
+
+
 Installation
 ------------
 
