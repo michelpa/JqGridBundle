@@ -48,7 +48,7 @@ Installation
          {
              return array(
                  // ...
-                 new EPS\JqGridBundle\JqGridBundle(),
+                 new EPS\JqGridBundle\EPSJqGridBundle(),
                  // ...
              );
          }
