@@ -53,7 +53,7 @@
             pager: '#pager_{{grid.name|raw}}'
         }); 
         
-        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}',{view:true,search:false, edit:false,add:false,del:false});
+        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}',{ {{grid.navoptions|raw}} });
         jQuery("#{{grid.name|raw}}").navGrid("#pager_{{grid.name|raw}}").navSeparatorAdd("#pager_{{grid.name|raw}}", {sepclass : "ui-separator",sepcontent: ''}).navButtonAdd("#pager_{{grid.name|raw}}",{id : "resetSearch_{{grid.name|raw}}" ,caption:"", buttonicon:"ui-icon-home", onClickButton:null, position: "last", title:"Réinitialiser les filtres", cursor: "pointer"});
         
         jQuery("#{{grid.name|raw}}").jqGrid('filterToolbar',{stringResult:true, searchOnEnter:true, defaultSearch:"cn"});

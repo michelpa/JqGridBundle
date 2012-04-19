@@ -45,6 +45,7 @@ class Grid {
     private $options;
     private $routeforced;
     private $hideifempty;
+    private $navOptions;
 
     /**
      * @var string
@@ -271,6 +272,14 @@ class Grid {
             'datatype' => 'json',
             'viewrecords' => true,
         );
+
+        $this->navOptions = array(
+            'view'      => false,
+            'search'    => false,
+            'edit'      => false,
+            'add'       => false,
+            'del'       => false,
+        ); 
     }
 
     public function setOptions(array $options) {
@@ -279,6 +288,12 @@ class Grid {
         }
     }
 
+    public function setNavOptions(array $options) {
+        foreach ($options as $k => $v) {
+            $this->navOptions[$k] = $options[$k];
+        }
+    }
+    
     public function getOptions($json = true) {
         if ($json) {
             $opts = json_encode($this->options);
@@ -292,6 +307,19 @@ class Grid {
         }
     }
 
+    public function getNavOptions($json = true) {
+        if ($json) {
+            $opts = json_encode($this->navOptions);
+            $opts = substr($opts, 1);
+            $opts = substr($opts, 0, strlen($opts) - 1);
+            $opts = $opts . ', ';
+
+            return $opts;
+        } else {
+            return $this->navOptions;
+        }
+    }
+    
     public function getCulture() {
         if ($l = $this->request->get('_locale') != '') {
             return $l;
