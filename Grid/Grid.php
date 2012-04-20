@@ -45,6 +45,7 @@ class Grid {
     private $options;
     private $routeforced;
     private $hideifempty;
+    private $navActions;
     private $navOptions;
 
     /**
@@ -288,11 +289,17 @@ class Grid {
         }
     }
 
+    public function setNavActions(array $options) {
+        foreach ($options as $k => $v) {
+            $this->navActions[$k] = $options[$k];
+        }
+    }
+
     public function setNavOptions(array $options) {
         foreach ($options as $k => $v) {
             $this->navOptions[$k] = $options[$k];
         }
-    }
+    }    
     
     public function getOptions($json = true) {
         if ($json) {
@@ -307,17 +314,21 @@ class Grid {
         }
     }
 
-    public function getNavOptions($json = true) {
+    public function getNavActions($json = true) {
         if ($json) {
-            $opts = json_encode($this->navOptions);
+            $opts = json_encode($this->navActions);
             $opts = substr($opts, 1);
             $opts = substr($opts, 0, strlen($opts) - 1);
             $opts = $opts . ', ';
 
             return $opts;
         } else {
-            return $this->navOptions;
+            return $this->navActions;
         }
+    }
+
+    public function getNavOptions($action) {
+            return $this->navOptions[$action];
     }
     
     public function getCulture() {
