@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace EPS\JqGridBundle\Twig;
+namespace Openify\JqGridBundle\Twig;
 
-use EPS\JqGridBundle\Grid\Grid;
+use Openify\JqGridBundle\Grid\Grid;
 
 
 class JqGridExtension extends \Twig_Extension {
 
-    const DEFAULT_TEMPLATE = 'EPSJqGridBundle::blocks.html.twig';
+    const DEFAULT_TEMPLATE = 'OpenifyJqGridBundle::blocks.html.twig';
 
     /**
      * @var \Symfony\Component\Routing\Router

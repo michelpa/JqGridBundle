@@ -1,6 +1,6 @@
 <?php
 
-namespace EPS\JqGridBundle\Grid;
+namespace Openify\JqGridBundle\Grid;
 
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Response;
