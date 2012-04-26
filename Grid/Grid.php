@@ -252,10 +252,6 @@ class Grid {
                 foreach ( $this->columns as $c ) {
                     if (array_key_exists ( $c->getFieldName (), $row )) {
                         $val [] = $row [$c->getFieldName ()];
-
-                        if ('id' == $c->getFieldName () ){
-                            $response ['rows'] [$key] ['id'] = $row['id'];
-                        }
                     }
                     elseif ($c->getFieldValue ()) {
                         $val [] = $c->getFieldValue ();
