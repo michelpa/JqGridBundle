@@ -184,6 +184,124 @@ class Grid {
         }
     }
     
+    /*
+     * http://www.trirand.com/jqgridwiki/doku.php?id=wiki:search_config
+     */
+    protected function generateFilters() {
+        $filters = $this->request->query->get ( 'filters' );
+        
+        $filters = json_decode ( $filters, true );
+        $rules = $filters ['rules'];
+        $groupOp = $filters ['groupOp']; //AND or OR
+        
+        if ($rules) {
+            foreach ( $rules as $rule ) {
+                foreach ( $this->columns as $c ) {
+                    if ($c->getFieldIndex () == $rule ['field']) {
+                        
+                        $op = $rule ['op'];
+                        
+                        $parameter = $rule ['data'];
+                        
+                        switch ($rule ['op']) {
+                            case 'eq' :
+                                $where = $this->qb->expr ()->eq ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                break;
+                            case 'ne' :
+                                $where = $this->qb->expr ()->neq ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                break;
+                            case 'lt' :
+                                $where = $this->qb->expr ()->lt ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                break;
+                            case 'le' :
+                                $where = $this->qb->expr ()->lte ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                break;
+                            case 'gt' :
+                                $where = $this->qb->expr ()->gt ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                break;
+                            case 'ge' :
+                                $where = $this->qb->expr ()->gte ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                break;
+                            case 'bw' :
+                                $where = $this->qb->expr ()->like ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                $parameter = $rule ['data'] . '%';
+                                break;
+                            case 'bn' :
+                                $where = $c->getFieldIndex () . " NOT LIKE :{$c->getFieldName ()}";
+                                $parameter = $rule ['data'] . '%';
+                                break;
+                            case 'nu' :
+                                $where = $this->qb->expr ()->orX ( $this->qb->expr ()->eq ( $c->getFieldIndex (), ":{$c->getFieldName ()}" ), $c->getFieldIndex () . ' IS NULL' );
+                                $parameter = '';
+                                break;
+                            case 'nn' :
+                                $where = $this->qb->expr ()->andX ( $this->qb->expr ()->neq ( $c->getFieldIndex (), ":{$c->getFieldName ()}" ), $c->getFieldIndex () . ' IS NOT NULL' );
+                                
+                                $parameter = '';
+                                break;
+                            case 'in' :
+                                if (false !== strpos ( $rule ['data'], ',' )) {
+                                    $where = $this->qb->expr ()->in ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                    $parameter = explode ( ',', $rule ['data'] );
+                                }
+                                elseif (false !== strpos ( $rule ['data'], '-' )) {
+                                    $where = $this->qb->expr ()->between ( $c->getFieldIndex (), ":start", ":end" );
+                                    list ( $start, $end ) = explode ( '-', $rule ['data'] );
+                                    $this->qb->setParameter ( 'start', $start );
+                                    $this->qb->setParameter ( 'end', $end );
+                                    unset ( $parameter );
+                                }
+                                break;
+                            case 'ni' :
+                                if (false !== strpos ( $rule ['data'], ',' )) {
+                                    $where = $this->qb->expr ()->notIn ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                    $parameter = explode ( ',', $rule ['data'] );
+                                }
+                                elseif (false !== strpos ( $rule ['data'], '-' )) {
+                                    $where = $this->qb->expr ()->orX ( $c->getFieldIndex () . "< :start", $c->getFieldIndex () . "> :end" );
+                                    list ( $start, $end ) = explode ( '-', $rule ['data'] );
+                                    $this->qb->setParameter ( 'start', $start );
+                                    $this->qb->setParameter ( 'end', $end );
+                                    unset ( $parameter );
+                                }
+                                
+                                break;
+                            case 'ew' :
+                                $where = $this->qb->expr ()->like ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                $parameter = '%' . $rule ['data'];
+                                break;
+                            case 'en' :
+                                $where = $c->getFieldIndex () . " NOT LIKE :{$c->getFieldName ()}";
+                                $parameter = '%' . $rule ['data'];
+                                break;
+                            case 'nc' :
+                                $where = $c->getFieldIndex () . " NOT LIKE :{$c->getFieldName ()}";
+                                $parameter = '%' . $rule ['data'] . '%';
+                                break;
+                            default : //case 'cn'
+                                $where = $this->qb->expr ()->like ( $c->getFieldIndex (), ":{$c->getFieldName ()}" );
+                                $parameter = '%' . $rule ['data'] . '%';
+                        }
+                        //TODO : handle date field
+                        
+
+                        if ('OR' == $groupOp) {
+                            $this->qb->orWhere ( $where );
+                        }
+                        else {
+                            $this->qb->andWhere ( $where );
+                        
+                        }
+                        
+                        if (isset ( $parameter )) {
+                            $this->qb->setParameter ( $c->getFieldName (), $parameter );
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     public function getData() {
         if ($this->session->get ( $this->getHash () ) == 'Y') {
             
@@ -197,35 +315,8 @@ class Grid {
                 $this->qb->orderBy ( $sidx, $sord );
             }
             
-            if ($search == 'true') {
-                $paramnumber = 1;
-                $filters = json_decode ( $this->request->query->get ( 'filters' ), true );
-                $rules = $filters ['rules'];
-                
-                if ($rules) {
-                    foreach ( $rules as $rule ) {
-                        foreach ( $this->columns as $c ) {
-                            if ($c->getFieldIndex () == $rule ['field']) {
-                                //est-ce une date
-                                if ($c->getFieldFormatter () == 'date') {
-                                    $tmp = explode ( "/", $rule ['data'] );
-                                    $date = $tmp [2] . "-" . $tmp [1] . "-" . $tmp [0];
-                                    $this->qb->andWhere ( $c->getFieldIndex () . ' LIKE \'%' . $date . '%\'' );
-                                }
-                                elseif ($c->getFieldHaving ()) {
-                                    $this->qb->having ( $c->getFieldHaving () . " =  ?$paramnumber" );
-                                    $this->qb->setParameter ( $paramnumber, $rule ['data'] );
-                                    $paramnumber ++;
-                                }
-                                else {
-                                    $this->qb->andWhere ( $c->getFieldIndex () . " LIKE  ?$paramnumber" );
-                                    $this->qb->setParameter ( $paramnumber, '%' . $rule ['data'] . '%' );
-                                    $paramnumber ++;
-                                }
-                            }
-                        }
-                    }
-                }
+            if ($search) {
+                $this->generateFilters ();
             }
             
             $pagination = $this->paginator->paginate ( $this->qb->getQuery ()->setHydrationMode ( Query::HYDRATE_ARRAY ), $page/* page number */, $limit/* limit per page */
@@ -233,17 +324,9 @@ class Grid {
             
             $nbRec = $pagination->getTotalItemCount ();
             
-            if ($nbRec > 0) {
-                $total_pages = ceil ( $nbRec / $limit );
-            }
-            else {
-                $total_pages = 0;
-            }
+            $total_pages = ($nbRec > 0) ? ceil ( $nbRec / $limit ) : 0;
             
-            $response = array ();
-            $response ['page'] = $page;
-            $response ['total'] = $total_pages;
-            $response ['records'] = $nbRec;
+            $response = array ('page' => $page, 'total' => $total_pages, 'records' => $nbRec );
             
             foreach ( $pagination as $key => $item ) {
                 $row = $item;
@@ -270,7 +353,7 @@ class Grid {
             return $response;
         }
         else {
-            throw\Exception ( 'Invalid query' );
+            throw \Exception ( 'Invalid query' );
         }
     }
     
@@ -279,7 +362,6 @@ class Grid {
         $this->navActions = array ('view' => false, 'search' => false, 'edit' => false, 'add' => false, 'del' => false );
         $this->navOptions = array ('edit' => '', 'add' => '', 'del' => '', 'search' => '' );
     }
-
     
     public function setAttributeOptions($attribute, array $options) {
         foreach ( $options as $k => $v ) {
@@ -290,7 +372,7 @@ class Grid {
     public function getAttributeOptions($attribute, $json = true) {
         if ($json) {
             $opts = json_encode ( $this->{$attribute} );
-            $opts = trim($opts, '{}');
+            $opts = trim ( $opts, '{}' );
             $opts .= ', ';
             
             return $opts;
@@ -298,8 +380,8 @@ class Grid {
         else {
             return $this->{$attribute};
         }
-    }    
-
+    }
+    
     public function getNavOptions($action) {
         return $this->navOptions [$action];
     }
@@ -307,8 +389,9 @@ class Grid {
     public function getCulture() {
         if ($l = $this->request->get ( '_locale' ) != '') {
             return $l;
-        } else {
-            return \Locale::getDefault();
+        }
+        else {
+            return \Locale::getDefault ();
         }
     }
 
