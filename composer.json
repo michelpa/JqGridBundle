@@ -19,7 +19,7 @@
         "knplabs/knp-paginator-bundle": "dev-master"
     },
      "autoload": {
-        "psr-0": { "Openify\\JqGridBundle": "" }
+        "psr-0": { "Openify\\Bundle\\JqGridBundle": "" }
     },
-    "target-dir": "Openify/JqGridBundle"
+    "target-dir": "Openify/Bundle/JqGridBundle"
 }

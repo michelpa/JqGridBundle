@@ -1,6 +1,6 @@
 <?php
 
-namespace Openify\JqGridBundle;
+namespace Openify\Bundle\JqGridBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

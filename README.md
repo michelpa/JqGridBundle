@@ -48,7 +48,7 @@ Installation
          {
              return array(
                  // ...
-                 new Openify\JqGridBundle\OpenifyJqGridBundle(),
+                 new Openify\Bundle\JqGridBundle\OpenifyJqGridBundle(),
                  // ...
              );
          }

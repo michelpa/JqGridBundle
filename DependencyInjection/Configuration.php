@@ -1,6 +1,6 @@
 <?php
 
-namespace Openify\JqGridBundle\DependencyInjection;
+namespace Openify\Bundle\JqGridBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

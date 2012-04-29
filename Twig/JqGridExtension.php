@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Openify\JqGridBundle\Twig;
+namespace Openify\Bundle\JqGridBundle\Twig;
 
-use Openify\JqGridBundle\Grid\Grid;
+use Openify\Bundle\JqGridBundle\Grid\Grid;
 
 
 class JqGridExtension extends \Twig_Extension {

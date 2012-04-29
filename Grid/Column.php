@@ -1,6 +1,6 @@
 <?php
 
-namespace Openify\JqGridBundle\Grid;
+namespace Openify\Bundle\JqGridBundle\Grid;
 
 /**
  * Description of Column
