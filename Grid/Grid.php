@@ -194,6 +194,7 @@ class Grid {
         $rules = $filters ['rules'];
         $groupOp = $filters ['groupOp']; //AND or OR
         
+
         if ($rules) {
             foreach ( $rules as $rule ) {
                 foreach ( $this->columns as $c ) {
@@ -319,8 +320,7 @@ class Grid {
                 $this->generateFilters ();
             }
             
-            $pagination = $this->paginator->paginate ( $this->qb->getQuery ()->setHydrationMode ( Query::HYDRATE_ARRAY ), $page/* page number */, $limit/* limit per page */
-            );
+            $pagination = $this->paginator->paginate ( $this->qb->getQuery ()/*->setHydrationMode ( Query::HYDRATE_ARRAY )*/, $page/* page number */, $limit/* limit per page */);
             
             $nbRec = $pagination->getTotalItemCount ();
             
@@ -328,19 +328,43 @@ class Grid {
             
             $response = array ('page' => $page, 'total' => $total_pages, 'records' => $nbRec );
             
-            foreach ( $pagination as $key => $item ) {
-                $row = $item;
+            foreach ( $pagination as $key => $row ) {
+                //                \Doctrine\Common\Util\Debug::dump($row->getTranslations());
                 
+
                 $val = array ();
+
                 foreach ( $this->columns as $c ) {
-                    if (array_key_exists ( $c->getFieldName (), $row )) {
-                        $val [] = $row [$c->getFieldName ()];
-                    }
-                    elseif ($c->getFieldValue ()) {
-                        $val [] = $c->getFieldValue ();
-                    }
-                    elseif ($c->getFieldTwig ()) {
-                        $val [] = $this->templating->render ( $c->getFieldTwig (), array ('ligne' => $row ) );
+                    
+                    $fields = explode ( '.', $c->getFieldName () ); //if columnName = customer.email
+                    
+                    
+$recur = function ($fields, $row) use (&$recur){
+    $field = array_shift($fields);
+
+    if (property_exists ( $row, $field ) ){
+        $result = $row->{'get' . $field  } ();
+        
+        if (is_array($result) || is_object($result) ){
+            return $recur($fields, $result[0]);
+        }
+
+        return $result;
+
+    }
+
+    return false;
+};
+/*
+$get = $recur($fields, $row);
+\Doctrine\Common\Util\Debug::dump($get);
+
+die;
+*/
+
+                    if (property_exists ( $row, $fields[0] )) {
+                        $val [] = $recur($fields, $row);
+                       // $val [] = $row->{'get' . $c->getFieldName ()  } ();
                     }
                     else {
                         $val [] = ' ';
@@ -353,14 +377,14 @@ class Grid {
             return $response;
         }
         else {
-            throw \Exception ( 'Invalid query' );
+            throw\Exception ( 'Invalid query' );
         }
     }
     
     public function setDefaultOptions() {
         $this->options = array ('height' => '100%', 'rowNum' => 10, 'rowList' => array (10, 20, 30 ), 'datatype' => 'json', 'viewrecords' => true );
         $this->navActions = array ('view' => false, 'search' => false, 'edit' => false, 'add' => false, 'del' => false );
-        $this->navOptions = array ('edit' => '', 'add' => '', 'del' => '', 'search' => '' );
+        $this->navOptions = array ('edit' => array (), 'add' => array (), 'del' => array (), 'search' => array () );
     }
     
     public function setAttributeOptions($attribute, array $options) {
@@ -369,21 +393,22 @@ class Grid {
         }
     }
     
-    public function getAttributeOptions($attribute, $json = true) {
+    public function getAttributeOptions($attribute, $json = true, $onlyValues = false) {
+        if ($onlyValues) {
+            $this->{$attribute} = array_values ( $this->{$attribute} );
+        }
+        
         if ($json) {
-            $opts = json_encode ( $this->{$attribute} );
-            $opts = trim ( $opts, '{}' );
-            $opts .= ', ';
+            $opts = json_encode ( $this->{$attribute} ); //JSON_UNESCAPED_SLASHES php 5.4
+            $opts = str_replace ( "\/", "/", $opts ); // unescape for URL, breakk if we use end of a tag </script>
+            $opts = substr ( $opts, 1 );
+            $opts = substr ( $opts, 0, strlen ( $opts ) - 1 );
             
             return $opts;
         }
         else {
             return $this->{$attribute};
         }
-    }
-    
-    public function getNavOptions($action) {
-        return $this->navOptions [$action];
     }
     
     public function getCulture() {

@@ -49,16 +49,16 @@
             colModel:[ 
                 {{grid.columnscolmodel|raw}}
             ], 
-            {{  grid.getAttributeOptions('options')|raw }}
+            {{  grid.getAttributeOptions('options')|raw }},
             {% if grid.caption != '' %}caption:"{{grid.caption}}", {% endif %}
             pager: '#pager_{{grid.name|raw}}'
         }); 
         
-        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}', { {{grid.getAttributeOptions('navActions')|raw}} },
-        		{ {{ grid.navoptions('edit')|raw }} } , //edit options
-        		{ {{ grid.navoptions('add')|raw }} }, //add options
-                { {{ grid.navoptions('del')|raw }} }, //del options
-                { {{ grid.navoptions('search')|raw }} } //search options
+        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}', 
+                { {{grid.getAttributeOptions('navActions')|raw}} },
+
+        		{{grid.getAttributeOptions('navOptions', true, true)|raw}}
+
         
         );
         
