@@ -5,16 +5,16 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="eps_jq_grid.base.class">EPS\JqGridBundle\Grid\Grid</parameter>
-        <parameter key="eps_jq_grid.twig_extension.class">EPS\JqGridBundle\Twig\JqGridExtension</parameter>
+        <parameter key="openify_jq_grid.base.class">Openify\Bundle\JqGridBundle\Grid\Grid</parameter>
+        <parameter key="openify_jq_grid.twig_extension.class">Openify\Bundle\JqGridBundle\Twig\JqGridExtension</parameter>
     </parameters>
 
     <services>
-        <service id="eps_jq_grid" class="%eps_jq_grid.base.class%" scope="prototype">
+        <service id="openify_jq_grid" class="%openify_jq_grid.base.class%" scope="prototype">
             <argument type="service" id="service_container" />
             <argument type="service" id="knp_paginator" />
         </service>
-        <service id="eps_jq_grid.twig_extension" class="%eps_jq_grid.twig_extension.class%" public="false">
+        <service id="openify_jq_grid.twig_extension" class="%openify_jq_grid.twig_extension.class%" public="false">
             <tag name="twig.extension" />
             <argument type="service" id="router" />
         </service>

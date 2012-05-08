@@ -1,6 +1,6 @@
 <?php
 
-namespace EPS\JqGridBundle\Tests\Controller;
+namespace Openify\Bundle\JqGridBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

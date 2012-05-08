@@ -17,9 +17,9 @@ Installation
     Add the following lines in your deps file:
 
     ```
-      [EPSJqGridBundle]
+      [OpenifyJqGridBundle]
         git=git://github.com/michelpa/JqGridBundle.git
-        target=/bundles/EPS/JqGridBundle
+        target=/bundles/Openify/JqGridBundle
     ```
 
     Run the vendor script:
@@ -28,13 +28,13 @@ Installation
       ./bin/vendors install
     ```
 
-2. **Add the "EPS" namespace to your autoloader**
+2. **Add the "Openify" namespace to your autoloader**
 
     ```php
        <?php
        // app/autoload.php
        $loader->registerNamespaces(array(
-           'EPS' => __DIR__.'/../vendor/bundles',
+           'Openify' => __DIR__.'/../vendor/bundles',
        // your other namespaces
        ));
     ```
@@ -48,7 +48,7 @@ Installation
          {
              return array(
                  // ...
-                 new EPS\JqGridBundle\EPSJqGridBundle(),
+                 new Openify\Bundle\JqGridBundle\OpenifyJqGridBundle(),
                  // ...
              );
          }
@@ -58,12 +58,12 @@ Installation
 
      *JS*
 
-         bundles/epsjqgrid/js/i18n/grid.locale-fr.js
-         bundles/epsjqgrid/js/jquery.jqGrid.min.js
+         bundles/openifyjqgrid/js/i18n/grid.locale-fr.js
+         bundles/openifyjqgrid/js/jquery.jqGrid.min.js
 
      *CSS*
 
-         bundles/epsjqgrid/css/ui.jqgrid.css
+         bundles/openifyjqgrid/css/ui.jqgrid.css
 
 Grid example
 ------------

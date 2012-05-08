@@ -1,7 +1,7 @@
 {% block gridjs %}
 {% spaceless %}
 <div id="{{grid.name|raw}}_wrapper" {% if grid.hideifempty %}style="display: none;"{% endif %}>
-    <table class="eps_jqgrid" id="{{grid.name|raw}}"></table>
+    <table class="openify_jqgrid" id="{{grid.name|raw}}"></table>
     <div id="pager_{{grid.name|raw}}"></div>
     <hr/>
 </div>
@@ -33,6 +33,7 @@
        
         jQuery("#{{grid.name|raw}}").jqGrid({
             url:'{{grid.getrouteurl}}',
+            editurl:'{{grid.getrouteurl}}',
             {% if grid.hideifempty %}
             gridComplete: function() {
                 var recs = parseInt($("#{{grid.name|raw}}").getGridParam("records"),10);
@@ -48,13 +49,21 @@
             colModel:[ 
                 {{grid.columnscolmodel|raw}}
             ], 
-            {{  grid.options|raw }}
+            {{  grid.getAttributeOptions('options')|raw }},
             {% if grid.caption != '' %}caption:"{{grid.caption}}", {% endif %}
             pager: '#pager_{{grid.name|raw}}'
         }); 
         
-        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}',{view:true,search:false, edit:false,add:false,del:false});
-        jQuery("#{{grid.name|raw}}").navGrid("#pager_{{grid.name|raw}}").navSeparatorAdd("#pager_{{grid.name|raw}}", {sepclass : "ui-separator",sepcontent: ''}).navButtonAdd("#pager_{{grid.name|raw}}",{id : "resetSearch_{{grid.name|raw}}" ,caption:"", buttonicon:"ui-icon-home", onClickButton:null, position: "last", title:"Réinitialiser les filtres", cursor: "pointer"});
+        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}', 
+                { {{grid.getAttributeOptions('navActions')|raw}} },
+
+        		{{grid.getAttributeOptions('navOptions', true, true)|raw}}
+
+        
+        );
+        
+        
+        jQuery("#{{grid.name|raw}}").navGrid("#pager_{{grid.name|raw}}").navSeparatorAdd("#pager_{{grid.name|raw}}", {sepclass : "ui-separator",sepcontent: ''}).navButtonAdd("#pager_{{grid.name|raw}}",{id : "resetSearch_{{grid.name|raw}}" ,caption:"", buttonicon:"ui-icon-home", onClickButton:null, position: "last", title:"Réinitialiser les filtres", cursor: "pointer"}                );
         
         jQuery("#{{grid.name|raw}}").jqGrid('filterToolbar',{stringResult:true, searchOnEnter:true, defaultSearch:"cn"});
         
@@ -62,8 +71,6 @@
             jQuery("#{{grid.name|raw}}")[0].clearToolbar();
         });
         
-    
-
         
     }); 
     </script>

@@ -1,9 +1,9 @@
 {
-    "name": "EPS/JqGridBundle",
+    "name": "openify/jq-grid-bundle",
     "type": "symfony-bundle",
     "description": "JqGrid integration for Symfony2",
     "keywords": ["datagrid","jqgrid"],
-    "homepage": "http://github.com/michelpa/JqGridBundle",
+    "homepage": "http://github.com/openify/JqGridBundle",
     "license": "MIT",
     "authors": [
         {
@@ -16,10 +16,10 @@
         "php": ">=5.3.2",
         "symfony/framework-bundle": "2.*",
         "doctrine/orm":             "2.*", 
-        "knplabs/knp-paginator-bundle": "2.*"
+        "knplabs/knp-paginator-bundle": "dev-master"
     },
      "autoload": {
-        "psr-0": { "EPS\\JqGridBundle": "" }
+        "psr-0": { "Openify\\Bundle\\JqGridBundle": "" }
     },
-    "target-dir": "EPS/JqGridBundle"
+    "target-dir": "Openify/Bundle/JqGridBundle"
 }

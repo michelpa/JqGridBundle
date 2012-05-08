@@ -1,6 +1,8 @@
 <?php
 
-namespace EPS\JqGridBundle\Grid;
+namespace Openify\Bundle\JqGridBundle\Grid;
+
+use Openify\Bundle\JqGridBundle\Tool\Tool;
 
 /**
  * Description of Column
@@ -96,7 +98,7 @@ class Column {
             $model['name'] = $prefix . $model['name'];
         }
 
-        $models = json_encode($model);
+        $models = Tool::json_encode_jsfunc($model);
 
         $models = substr($models, 0, strlen($models) - 1) . $dp . '}';
 
