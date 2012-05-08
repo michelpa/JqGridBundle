@@ -5,6 +5,7 @@ namespace Openify\Bundle\JqGridBundle\Grid;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\Query;
+use Openify\Bundle\JqGridBundle\Tool\Tool;
 
 //use Doctrine\ORM\Query;
 
@@ -53,7 +54,7 @@ class Grid {
      * @var string
      */
     private $hash;
-    
+
     public function __construct($container, $paginator) {
         $this->container = $container;
         
@@ -333,38 +334,39 @@ class Grid {
                 
 
                 $val = array ();
-
+                
                 foreach ( $this->columns as $c ) {
                     
                     $fields = explode ( '.', $c->getFieldName () ); //if columnName = customer.email
                     
-                    
-$recur = function ($fields, $row) use (&$recur){
-    $field = array_shift($fields);
 
-    if (property_exists ( $row, $field ) ){
-        $result = $row->{'get' . $field  } ();
-        
-        if (is_array($result) || is_object($result) ){
-            return $recur($fields, $result[0]);
-        }
-
-        return $result;
-
-    }
-
-    return false;
-};
-/*
+                    $recur = function ($fields, $row) use(&$recur) {
+                        $field = array_shift ( $fields );
+                        
+                        if (property_exists ( $row, $field )) {
+                            $result = $row->{'get' . $field  } ();
+                            
+                            if (is_array ( $result ) || is_object ( $result )) {
+                                return $recur ( $fields, $result [0] );
+                            }
+                            
+                            return $result;
+                        
+                        }
+                        
+                        return false;
+                    };
+                    /*
 $get = $recur($fields, $row);
 \Doctrine\Common\Util\Debug::dump($get);
 
 die;
 */
-
-                    if (property_exists ( $row, $fields[0] )) {
-                        $val [] = $recur($fields, $row);
-                       // $val [] = $row->{'get' . $c->getFieldName ()  } ();
+                    
+                    if (property_exists ( $row, $fields [0] )) {
+                        $val [] = $recur ( $fields, $row );
+                    
+     // $val [] = $row->{'get' . $c->getFieldName ()  } ();
                     }
                     else {
                         $val [] = ' ';
@@ -377,7 +379,7 @@ die;
             return $response;
         }
         else {
-            throw\Exception ( 'Invalid query' );
+            throw \Exception ( 'Invalid query' );
         }
     }
     
@@ -399,8 +401,7 @@ die;
         }
         
         if ($json) {
-            $opts = json_encode ( $this->{$attribute} ); //JSON_UNESCAPED_SLASHES php 5.4
-            $opts = str_replace ( "\/", "/", $opts ); // unescape for URL, breakk if we use end of a tag </script>
+            $opts = Tool::json_encode_jsfunc ( $this->{$attribute} );
             $opts = substr ( $opts, 1 );
             $opts = substr ( $opts, 0, strlen ( $opts ) - 1 );
             
@@ -410,6 +411,8 @@ die;
             return $this->{$attribute};
         }
     }
+    
+
     
     public function getCulture() {
         if ($l = $this->request->get ( '_locale' ) != '') {
