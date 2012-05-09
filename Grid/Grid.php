@@ -58,8 +58,7 @@ class Grid
 
         $this->router = $container->get('router');
         $this->request = $container->get('request');
-        $this->session = $this->request
-                              ->getSession();
+        $this->session = $this->request->getSession();
         $this->paginator = $paginator;
         $this->em = $container->get('doctrine.orm.entity_manager');
         $this->templating = $container->get('templating');
@@ -69,8 +68,7 @@ class Grid
         $this->routeforced = '';
         $this->hideifempty = false;
 
-        if ($this->request
-                 ->isXmlHttpRequest()) {
+        if ($this->request->isXmlHttpRequest()) {
             $this->onlyData = true;
         } else {
             $this->onlyData = false;
@@ -162,9 +160,7 @@ class Grid
         if ($this->routeforced != '') {
             return $this->routeforced;
         } else {
-            return $this->router
-                        ->generate($this->request
-                                        ->get('_route'));
+            return $this->router->generate($this->request->get('_route'));
         }
     }
 
@@ -180,10 +176,8 @@ class Grid
 
     public function createHash()
     {
-        $this->hash = 'grid_' . md5($this->request
-                                         ->get('_controller') . $this->getName());
-        $this->session
-                ->set($this->getHash(), 'Y');
+        $this->hash = 'grid_' . md5($this->request->get('_controller') . $this->getName());
+        $this->session->set($this->getHash(), 'Y');
     }
 
     public function getHash()
@@ -196,8 +190,7 @@ class Grid
         if ($this->isOnlyData()) {
             $response = new Response();
             $response->setContent(json_encode($this->getData()));
-            $response->headers
-                     ->set('Content-Type', 'application/json');
+            $response->headers->set('Content-Type', 'application/json');
             return $response;
         } else {
             return array(
@@ -208,70 +201,23 @@ class Grid
 
     public function getData()
     {
-        if ($this->session
-                 ->get($this->getHash()) == 'Y') {
+        if ($this->session->get($this->getHash()) == 'Y') {
 
-            $page = $this->request
-                         ->query
-                         ->get('page');
-            $limit = $this->request
-                          ->query
-                          ->get('rows');
-            $sidx = $this->request
-                         ->query
-                         ->get('sidx');
-            $sord = $this->request
-                         ->query
-                         ->get('sord');
-            $search = $this->request
-                           ->query
-                           ->get('_search');
+            $page = $this->request->query->get('page');
+            $limit = $this->request->query->get('rows');
+            $sidx = $this->request->query->get('sidx');
+            $sord = $this->request->query->get('sord');
+            $search = $this->request->query->get('_search');
 
             if ($sidx != '') {
-                $this->qb
-                        ->orderBy($sidx, $sord);
+                $this->qb->orderBy($sidx, $sord);
             }
 
-            if ($search == 'true') {
-                $paramnumber = 1;
-                $filters = json_decode($this->request
-                                            ->query
-                                            ->get('filters'), true);
-                $rules = $filters['rules'];
-
-                if ($rules) {
-                    foreach ($rules as $rule) {
-                        foreach ($this->columns as $c) {
-                            if ($c->getFieldIndex() == $rule['field']) {
-                                //est-ce une date
-                                if ($c->getFieldFormatter() == 'date') {
-                                    $tmp = explode("/", $rule['data']);
-                                    $date = $tmp[2] . "-" . $tmp[1] . "-" . $tmp[0];
-                                    $this->qb
-                                            ->andWhere($c->getFieldIndex() . ' LIKE \'%' . $date . '%\'');
-                                } elseif ($c->getFieldHaving()) {
-                                    $this->qb
-                                            ->having($c->getFieldHaving() . " =  ?$paramnumber");
-                                    $this->qb
-                                            ->setParameter($paramnumber, $rule['data']);
-                                    $paramnumber++;
-                                } else {
-                                    $this->qb
-                                            ->andWhere($c->getFieldIndex() . " LIKE  ?$paramnumber");
-                                    $this->qb
-                                            ->setParameter($paramnumber, '%' . $rule['data'] . '%');
-                                    $paramnumber++;
-                                }
-                            }
-                        }
-                    }
-                }
+            if ($search) {
+                $this->generateFilters();
             }
 
-            $pagination = $this->paginator
-                               ->paginate($this->qb
-                                               ->getQuery()
-                                               ->setHydrationMode(Query::HYDRATE_ARRAY), $page/* page number */, $limit/* limit per page */
+            $pagination = $this->paginator->paginate($this->qb->getQuery()->setHydrationMode(Query::HYDRATE_ARRAY), $page/* page number */, $limit/* limit per page */
                                );
 
             $nbRec = $pagination->getTotalItemCount();
@@ -282,10 +228,9 @@ class Grid
                 $total_pages = 0;
             }
 
-            $response = array();
-            $response['page'] = $page;
-            $response['total'] = $total_pages;
-            $response['records'] = $nbRec;
+            $response = array(
+                'page' => $page, 'total' => $total_pages, 'records' => $nbRec
+            );
 
             foreach ($pagination as $key => $item) {
                 $row = $item;
@@ -297,8 +242,7 @@ class Grid
                     } elseif ($c->getFieldValue()) {
                         $val[] = $c->getFieldValue();
                     } elseif ($c->getFieldTwig()) {
-                        $val[] = $this->templating
-                                      ->render($c->getFieldTwig(), array(
+                        $val[] = $this->templating->render($c->getFieldTwig(), array(
                                       'ligne' => $row
                                       ));
                     } else {
@@ -372,11 +316,139 @@ class Grid
 
     public function getCulture()
     {
-        if ($l = $this->request
-                      ->get('_locale') != '') {
+        if ($l = $this->request->get('_locale') != '') {
             return $l;
         } else {
             return \Locale::getDefault();
+        }
+    }
+
+    /*
+     * http://www.trirand.com/jqgridwiki/doku.php?id=wiki:search_config
+     */
+    protected function generateFilters()
+    {
+
+        $paramnumber = 1;
+
+        $filters = $this->request->query->get('filters');
+
+        $filters = json_decode($filters, true);
+        $rules = $filters['rules'];
+        $groupOp = $filters['groupOp']; //AND or OR
+
+        if ($rules) {
+            foreach ($rules as $rule) {
+                foreach ($this->columns as $c) {
+                    if ($c->getFieldIndex() == $rule['field']) {
+
+                        $op = $rule['op'];
+
+                        $parameter = $rule['data'];
+
+                        if ($c->getFieldFormatter() == 'date') {
+                            //TODO : handle date field 
+                            $tmp = explode("/", $rule['data']);
+                            $date = $tmp[2] . "-" . $tmp[1] . "-" . $tmp[0];
+                            $this->qb->andWhere($c->getFieldIndex() . ' LIKE \'%' . $date . '%\'');
+                        } elseif ($c->getFieldHaving()) {
+                            $this->qb->having($c->getFieldHaving() . " =  ?$paramnumber");
+                            $this->qb->setParameter($paramnumber, $rule['data']);
+                            $paramnumber++;
+                        } else {
+
+                            switch ($rule['op']) {
+                                case 'eq':
+                                    $where = $this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    break;
+                                case 'ne':
+                                    $where = $this->qb->expr()->neq($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    break;
+                                case 'lt':
+                                    $where = $this->qb->expr()->lt($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    break;
+                                case 'le':
+                                    $where = $this->qb->expr()->lte($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    break;
+                                case 'gt':
+                                    $where = $this->qb->expr()->gt($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    break;
+                                case 'ge':
+                                    $where = $this->qb->expr()->gte($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    break;
+                                case 'bw':
+                                    $where = $this->qb->expr()->like($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    $parameter = $rule['data'] . '%';
+                                    break;
+                                case 'bn':
+                                    $where = $c->getFieldIndex() . " NOT LIKE :{$c->getFieldName()}";
+                                    $parameter = $rule['data'] . '%';
+                                    break;
+                                case 'nu':
+                                    $where = $this->qb->expr()->orX($this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}"), $c->getFieldIndex() . ' IS NULL');
+                                    $parameter = '';
+                                    break;
+                                case 'nn':
+                                    $where = $this->qb->expr()->andX($this->qb->expr()->neq($c->getFieldIndex(), ":{$c->getFieldName()}"), $c->getFieldIndex() . ' IS NOT NULL');
+
+                                    $parameter = '';
+                                    break;
+                                case 'in':
+                                    if (false !== strpos($rule['data'], ',')) {
+                                        $where = $this->qb->expr()->in($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                        $parameter = explode(',', $rule['data']);
+                                    } elseif (false !== strpos($rule['data'], '-')) {
+                                        $where = $this->qb->expr()->between($c->getFieldIndex(), ":start", ":end");
+                                        list($start, $end) = explode('-', $rule['data']);
+                                        $this->qb->setParameter('start', $start);
+                                        $this->qb->setParameter('end', $end);
+                                        unset($parameter);
+                                    }
+                                    break;
+                                case 'ni':
+                                    if (false !== strpos($rule['data'], ',')) {
+                                        $where = $this->qb->expr()->notIn($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                        $parameter = explode(',', $rule['data']);
+                                    } elseif (false !== strpos($rule['data'], '-')) {
+                                        $where = $this->qb->expr()->orX($c->getFieldIndex() . "< :start", $c->getFieldIndex() . "> :end");
+                                        list($start, $end) = explode('-', $rule['data']);
+                                        $this->qb->setParameter('start', $start);
+                                        $this->qb->setParameter('end', $end);
+                                        unset($parameter);
+                                    }
+
+                                    break;
+                                case 'ew':
+                                    $where = $this->qb->expr()->like($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    $parameter = '%' . $rule['data'];
+                                    break;
+                                case 'en':
+                                    $where = $c->getFieldIndex() . " NOT LIKE :{$c->getFieldName()}";
+                                    $parameter = '%' . $rule['data'];
+                                    break;
+                                case 'nc':
+                                    $where = $c->getFieldIndex() . " NOT LIKE :{$c->getFieldName()}";
+                                    $parameter = '%' . $rule['data'] . '%';
+                                    break;
+                                default: //case 'cn'
+                                    $where = $this->qb->expr()->like($c->getFieldIndex(), ":{$c->getFieldName()}");
+                                    $parameter = '%' . $rule['data'] . '%';
+                            }
+
+                            if ('OR' == $groupOp) {
+                                $this->qb->orWhere($where);
+                            } else {
+                                $this->qb->andWhere($where);
+
+                            }
+
+                            if (isset($parameter)) {
+                                $this->qb->setParameter($c->getFieldName(), $parameter);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
