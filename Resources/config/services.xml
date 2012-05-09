@@ -1,24 +1,33 @@
 <?xml version="1.0" ?>
 
 <container xmlns="http://symfony.com/schema/dic/services"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="eps_jq_grid.base.class">EPS\JqGridBundle\Grid\Grid</parameter>
-        <parameter key="eps_jq_grid.twig_extension.class">EPS\JqGridBundle\Twig\JqGridExtension</parameter>
-    </parameters>
+	<parameters>
+		<parameter key="eps_jq_grid.base.class">EPS\JqGridBundle\Grid\Grid</parameter>
+		<parameter key="eps_jq_grid.twig_extension.class">EPS\JqGridBundle\Twig\JqGridExtension
+		</parameter>
+	</parameters>
 
-    <services>
-        <service id="eps_jq_grid" class="%eps_jq_grid.base.class%" scope="prototype">
-            <argument type="service" id="service_container" />
-            <argument type="service" id="knp_paginator" />
-        </service>
-        <service id="eps_jq_grid.twig_extension" class="%eps_jq_grid.twig_extension.class%" public="false">
-            <tag name="twig.extension" />
-            <argument type="service" id="router" />
-        </service>
-        
-    </services>
-    
+	<services>
+		<service id="eps_jq_grid" class="%eps_jq_grid.base.class%" scope="prototype">
+			<argument type="service" id="service_container" />
+			<argument type="service" id="knp_paginator" />
+			<call method="setDatePickerFormat">
+				<argument>%eps_jq_grid.datepicker_format%</argument>
+			</call>
+			<call method="setDatePickerPhpFormat">
+				<argument>%eps_jq_grid.datepickerphp_format%</argument>
+			</call>
+			
+		</service>
+		<service id="eps_jq_grid.twig_extension" class="%eps_jq_grid.twig_extension.class%"
+			public="false">
+			<tag name="twig.extension" />
+			<argument type="service" id="router" />
+		</service>
+
+	</services>
+
 </container>

@@ -46,6 +46,8 @@ class Grid
     private $routeforced;
     private $hideifempty;
     private $navOptions;
+    private $datePickerFormat;
+    private $datePickerPhpFormat;
 
     /**
      * @var string
@@ -323,6 +325,26 @@ class Grid
         }
     }
 
+    public function setDatePickerFormat($format)
+    {
+        $this->datePickerFormat = $format;
+    }
+
+    public function getDatePickerFormat()
+    {
+        return $this->datePickerFormat;
+    }
+
+    public function setDatePickerPhpFormat($format)
+    {
+        $this->datePickerPhpFormat = $format;
+    }
+
+    public function getDatePickerPhpFormat()
+    {
+        return $this->datePickerPhpFormat;
+    }
+
     /*
      * http://www.trirand.com/jqgridwiki/doku.php?id=wiki:search_config
      */
@@ -347,10 +369,9 @@ class Grid
                         $parameter = $rule['data'];
 
                         if ($c->getFieldFormatter() == 'date') {
-                            //TODO : handle date field 
-                            $tmp = explode("/", $rule['data']);
-                            $date = $tmp[2] . "-" . $tmp[1] . "-" . $tmp[0];
-                            $this->qb->andWhere($c->getFieldIndex() . ' LIKE \'%' . $date . '%\'');
+                            $date = \DateTime::createFromFormat($this->datePickerPhpFormat, $rule['data']);
+                            $this->qb->andWhere($this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}"));
+                            $this->qb->setParameter($c->getFieldName(), $date->format('Y-m-d'));
                         } elseif ($c->getFieldHaving()) {
                             $this->qb->having($c->getFieldHaving() . " =  ?$paramnumber");
                             $this->qb->setParameter($paramnumber, $rule['data']);
