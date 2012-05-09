@@ -68,11 +68,13 @@ Installation
 5. **Configuration**
 
 in config.yml:
+
     ```php
 	eps_jq_grid: ~
     ```
 
  or if you want to specify the date format (for datepicker), you've got to set the date format in js AND in php format (conversion):
+
     ```php
 	eps_jq_grid: 
 	    datepicker_format: dd/mm/yy
