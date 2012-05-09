@@ -190,8 +190,11 @@ class Grid
     public function render()
     {
         if ($this->isOnlyData()) {
+
+            $content = $this->encode($this->getData());
+
             $response = new Response();
-            $response->setContent(json_encode($this->getData()));
+            $response->setContent($content);
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         } else {
@@ -471,6 +474,10 @@ class Grid
                 }
             }
         }
+    }
+    
+    private function encode($datas){
+        return json_encode($datas);
     }
 
 }
