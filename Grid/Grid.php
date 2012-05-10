@@ -352,8 +352,6 @@ class Grid extends GridTools
     protected function generateFilters()
     {
 
-        $paramnumber = 1;
-
         $filters = $this->request->query->get('filters');
 
         $filters = json_decode($filters, true);
@@ -374,9 +372,8 @@ class Grid extends GridTools
                             $this->qb->andWhere($this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}"));
                             $this->qb->setParameter($c->getFieldName(), $date->format('Y-m-d'));
                         } elseif ($c->getFieldHaving()) {
-                            $this->qb->having($c->getFieldHaving() . " =  ?$paramnumber");
-                            $this->qb->setParameter($paramnumber, $rule['data']);
-                            $paramnumber++;
+                            $this->qb->having($c->getFieldHaving() . " = :{$c->getFieldName()}");
+                            $this->qb->setParameter($c->getFieldName(), $rule['data']);
                         } else {
 
                             switch ($rule['op']) {
