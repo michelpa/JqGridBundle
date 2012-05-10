@@ -12,7 +12,7 @@ use Doctrine\ORM\Query;
  *
  * @author pascal
  */
-class Grid
+class Grid extends GridTools
 {
 
     /**
@@ -58,12 +58,12 @@ class Grid
     {
         $this->container = $container;
 
-        $this->router = $container->get('router');
-        $this->request = $container->get('request');
+        $this->router = $this->container->get('router');
+        $this->request = $this->container->get('request');
         $this->session = $this->request->getSession();
         $this->paginator = $paginator;
-        $this->em = $container->get('doctrine.orm.entity_manager');
-        $this->templating = $container->get('templating');
+        $this->em = $this->container->get('doctrine.orm.entity_manager');
+        $this->templating = $this->container->get('templating');
         $this->columns = array();
         $this->setDefaultOptions();
         $this->caption = '';
@@ -81,6 +81,26 @@ class Grid
         $this->name = md5($now->format('Y-m-d H:i:s:u'));
 
         unset($this->routeParameters['_route']);
+    }
+
+    public function setDatePickerFormat($format)
+    {
+        $this->datePickerFormat = $format;
+    }
+
+    public function getDatePickerFormat()
+    {
+        return $this->datePickerFormat;
+    }
+
+    public function setDatePickerPhpFormat($format)
+    {
+        $this->datePickerPhpFormat = $format;
+    }
+
+    public function getDatePickerPhpFormat()
+    {
+        return $this->datePickerPhpFormat;
     }
 
     public function setSource(QueryBuilder $qb)
@@ -222,8 +242,7 @@ class Grid
                 $this->generateFilters();
             }
 
-            $pagination = $this->paginator->paginate($this->qb->getQuery()->setHydrationMode(Query::HYDRATE_ARRAY), $page/* page number */, $limit/* limit per page */
-                               );
+            $pagination = $this->paginator->paginate($this->qb->getQuery()->setHydrationMode(Query::HYDRATE_ARRAY), $page, $limit);
 
             $nbRec = $pagination->getTotalItemCount();
 
@@ -312,7 +331,6 @@ class Grid
             $opts = substr($opts, 1);
             $opts = substr($opts, 0, strlen($opts) - 1);
             $opts = $opts . ', ';
-
             return $opts;
         } else {
             return $this->options;
@@ -326,26 +344,6 @@ class Grid
         } else {
             return \Locale::getDefault();
         }
-    }
-
-    public function setDatePickerFormat($format)
-    {
-        $this->datePickerFormat = $format;
-    }
-
-    public function getDatePickerFormat()
-    {
-        return $this->datePickerFormat;
-    }
-
-    public function setDatePickerPhpFormat($format)
-    {
-        $this->datePickerPhpFormat = $format;
-    }
-
-    public function getDatePickerPhpFormat()
-    {
-        return $this->datePickerPhpFormat;
     }
 
     /*
@@ -474,10 +472,6 @@ class Grid
                 }
             }
         }
-    }
-    
-    private function encode($datas){
-        return json_encode($datas);
     }
 
 }

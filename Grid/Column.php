@@ -1,84 +1,86 @@
 <?php
 
 namespace EPS\JqGridBundle\Grid;
-
 /**
  * Description of Column
  *
  * @author pascal
  */
-class Column {
+class Column extends GridTools
+{
 
     private $name;
     private $colmodel;
 
-    public function __construct($name = null) {
+    public function __construct($name = null)
+    {
         if ($name != null) {
             $this->name = $name;
         }
     }
 
-    public function getName() {
-        return $this->name;
-    }
-
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function setColModel(array $colmodel) {
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setColModel(array $colmodel)
+    {
         $this->colmodel = $colmodel;
     }
 
-    public function getColModel() {
+    public function getColModel()
+    {
         return $this->colmodel;
     }
 
-    public function getFieldName() {
-        return $this->colmodel['name'];
-    }
-
-    public function getFieldValue() {
-        if (array_key_exists('value', $this->colmodel)) {
-            return $this->colmodel['value'];
-        } else {
-            return false;
-        }
-    }
-
-    public function getFieldIndex() {
-        if (array_key_exists('index', $this->colmodel)) {
-            return $this->colmodel['index'];
-        } else {
-            return false;
-        }
-    }
-
-    public function getFieldTwig() {
-        if (array_key_exists('twig', $this->colmodel)) {
-            return $this->colmodel['twig'];
-        } else {
-            return false;
-        }
-    }
-
-      public function getFieldHaving() {
-        if (array_key_exists('having', $this->colmodel)) {
-            return $this->colmodel['having'];
+    private function getField($fieldname)
+    {
+        if (array_key_exists($fieldname, $this->colmodel)) {
+            return $this->colmodel[$fieldname];
         } else {
             return false;
         }
     }
     
-    public function getFieldFormatter() {
-        if (array_key_exists('formatter', $this->colmodel)) {
-            return $this->colmodel['formatter'];
-        } else {
-            return false;
-        }
+    
+    public function getFieldName()
+    {
+        return $this->getField('name');
     }
 
-    public function getColModelJson($prefix = '') {
+    public function getFieldValue()
+    {
+        return $this->getField('value');
+    }
+
+    public function getFieldIndex()
+    {
+        return $this->getField('index');
+    }
+
+    public function getFieldTwig()
+    {
+        return $this->getField('twig');
+    }
+
+    public function getFieldHaving()
+    {
+        return $this->getField('having');
+    }
+
+    public function getFieldFormatter()
+    {
+        return $this->getField('formatter');
+    }
+
+    public function getColModelJson($prefix = '')
+    {
         $model = $this->colmodel;
         $dp = '';
 
@@ -96,7 +98,7 @@ class Column {
             $model['name'] = $prefix . $model['name'];
         }
 
-        $models = json_encode($model);
+        $models = $this->encode($model);
 
         $models = substr($models, 0, strlen($models) - 1) . $dp . '}';
 
