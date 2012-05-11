@@ -11,9 +11,12 @@ class Column extends GridTools
 
     private $name;
     private $colmodel;
+    private $router;
 
-    public function __construct($name = null)
+    public function __construct($router, $name = null)
     {
+
+        $this->router = $router;
         if ($name != null) {
             $this->name = $name;
         }
@@ -47,8 +50,7 @@ class Column extends GridTools
             return false;
         }
     }
-    
-    
+
     public function getFieldName()
     {
         return $this->getField('name');
@@ -74,6 +76,11 @@ class Column extends GridTools
         return $this->getField('having');
     }
 
+    public function getFieldAutocomplete()
+    {
+        return $this->getField('autocomplete');
+    }
+
     public function getFieldFormatter()
     {
         return $this->getField('formatter');
@@ -88,10 +95,16 @@ class Column extends GridTools
             $dp = ' ,"searchoptions" : {dataInit : datePick, "attr" : { "title": "Choisir une date" }}';
         }
 
+        if (array_key_exists('autocomplete', $model)) {
+            $route = $this->router->generate($model['autocomplete']);
+            $dp = ' ,"searchoptions" : {dataInit : function(elem) { $(elem).autocomplete({source:\'' . $route . '\',minLength:2}) }}';
+        }
+
         unset($model['twig']);
         unset($model['having']);
         unset($model['value']);
         unset($model['datepicker']);
+        unset($model['autocomplete']);
 
         //prefix index
         if (array_key_exists('name', $model)) {

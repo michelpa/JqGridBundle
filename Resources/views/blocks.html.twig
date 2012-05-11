@@ -31,39 +31,36 @@
         }
         
        
-        jQuery("#{{grid.name|raw}}").jqGrid({
-            url:'{{grid.getrouteurl}}',
+        jQuery("#{{ grid.name|raw }}").jqGrid({
+            url: '{{ grid.getrouteurl }}',
             {% if grid.hideifempty %}
             gridComplete: function() {
-                var recs = parseInt($("#{{grid.name|raw}}").getGridParam("records"),10);
+                var recs = parseInt($("#{{ grid.name|raw }}").getGridParam("records"),10);
                 if (recs == 0) {
-                    $("#{{grid.name|raw}}_wrapper").hide();
+                    $("#{{ grid.name|raw }}_wrapper").hide();
                 }
                 else {
-                    $('#{{grid.name|raw}}_wrapper').show();
+                    $('#{{ grid.name|raw }}_wrapper').show();
                 }
             },
             {% endif %}
-            colNames:[{{grid.columnsnames|raw}}], 
+            colNames:[{{ grid.columnsnames|raw }}], 
             colModel:[ 
-                {{grid.columnscolmodel|raw}}
+                {{ grid.columnscolmodel|raw }}
             ], 
             {{  grid.options|raw }}
-            {% if grid.caption != '' %}caption:"{{grid.caption}}", {% endif %}
-            pager: '#pager_{{grid.name|raw}}'
+            {% if grid.caption != '' %}caption:"{{ grid.caption }}", {% endif %}
+            pager: '#pager_{{ grid.name|raw }}'
         }); 
         
-        jQuery("#{{grid.name|raw}}").jqGrid('navGrid','#pager_{{grid.name|raw}}',{ {{grid.navoptions|raw}} });
-        jQuery("#{{grid.name|raw}}").navGrid("#pager_{{grid.name|raw}}").navSeparatorAdd("#pager_{{grid.name|raw}}", {sepclass : "ui-separator",sepcontent: ''}).navButtonAdd("#pager_{{grid.name|raw}}",{id : "resetSearch_{{grid.name|raw}}" ,caption:"", buttonicon:"ui-icon-home", onClickButton:null, position: "last", title:"Réinitialiser les filtres", cursor: "pointer"});
+        jQuery("#{{ grid.name|raw }}").jqGrid('navGrid','#pager_{{ grid.name|raw }}',{ {{ grid.navoptions|raw }} });
+        jQuery("#{{ grid.name|raw }}").navGrid("#pager_{{ grid.name|raw }}").navSeparatorAdd("#pager_{{ grid.name|raw }}", {sepclass : "ui-separator",sepcontent: ''}).navButtonAdd("#pager_{{grid.name|raw}}",{id : "resetSearch_{{grid.name|raw}}" ,caption:"", buttonicon:"ui-icon-home", onClickButton:null, position: "last", title:"Réinitialiser les filtres", cursor: "pointer"});
         
-        jQuery("#{{grid.name|raw}}").jqGrid('filterToolbar',{stringResult:true, searchOnEnter:true, defaultSearch:"cn"});
+        jQuery("#{{ grid.name|raw}}").jqGrid('filterToolbar',{stringResult:true, searchOnEnter:true, defaultSearch:"cn"});
         
-        $("#resetSearch_{{grid.name|raw}}").click(function() {
-            jQuery("#{{grid.name|raw}}")[0].clearToolbar();
+        $("#resetSearch_{{ grid.name|raw }}").click(function() {
+            jQuery("#{{ grid.name|raw }}")[0].clearToolbar();
         });
-        
-    
-
         
     }); 
     </script>

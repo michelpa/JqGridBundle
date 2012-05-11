@@ -112,7 +112,7 @@ class Grid extends GridTools
 
     public function addColumn($name, $colmodel)
     {
-        $col = new Column();
+        $col = new Column($this->router);
         $col->setName($name);
         $col->setColModel($colmodel);
         $this->columns[] = $col;
