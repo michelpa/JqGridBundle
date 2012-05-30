@@ -20,7 +20,7 @@
 			<call method="setDatePickerPhpFormat">
 				<argument>%eps_jq_grid.datepickerphp_format%</argument>
 			</call>
-			
+
 		</service>
 		<service id="eps_jq_grid.twig_extension" class="%eps_jq_grid.twig_extension.class%"
 			public="false">

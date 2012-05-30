@@ -1,7 +1,6 @@
 <?php
 namespace EPS\JqGridBundle\Grid;
 
-
 class GridTools
 {
     protected function encode($input = array(), $funcs = array(), $level = 0)
@@ -30,9 +29,9 @@ class GridTools
             foreach ($funcs as $key => $value) {
                 $input_json = str_replace('"' . $key . '"', $value, $input_json);
             }
+
             return $input_json;
         }
     }
-    
-    
+
 }

@@ -13,7 +13,6 @@ namespace EPS\JqGridBundle\Twig;
 
 use EPS\JqGridBundle\Grid\Grid;
 
-
 class JqGridExtension extends \Twig_Extension {
 
     const DEFAULT_TEMPLATE = 'EPSJqGridBundle::blocks.html.twig';
@@ -33,11 +32,13 @@ class JqGridExtension extends \Twig_Extension {
      */
     protected $templates;
 
-    public function __construct($router) {
+    public function __construct($router)
+    {
         $this->router = $router;
     }
 
-    public function initRuntime(\Twig_Environment $environment) {
+    public function initRuntime(\Twig_Environment $environment)
+    {
         $this->environment = $environment;
     }
 
@@ -46,26 +47,29 @@ class JqGridExtension extends \Twig_Extension {
      *
      * @return array An array of functions
      */
-    public function getFunctions() {
+    public function getFunctions()
+    {
         return array(
             'jqgrid_js' => new \Twig_Function_Method($this, 'renderGrid', array('is_safe' => array('html'))),
         );
     }
 
-    public function renderGrid(Grid $grid) {
+    public function renderGrid(Grid $grid)
+    {
         if (!$grid->isOnlyData()) {
             return $this->renderBlock('gridjs', array('grid' => $grid));
         }
     }
 
     /**
-     * Render block 
+     * Render block
      *
      * @param $name string
      * @param $parameters string
      * @return string
      */
-    private function renderBlock($name, $parameters) {
+    private function renderBlock($name, $parameters)
+    {
         foreach ($this->getTemplates() as $template) {
             if ($template->hasBlock($name)) {
                 return $template->renderBlock($name, $parameters);
@@ -81,7 +85,8 @@ class JqGridExtension extends \Twig_Extension {
      * @param $name string
      * @return boolean
      */
-    private function hasBlock($name) {
+    private function hasBlock($name)
+    {
         foreach ($this->getTemplates() as $template) {
             if ($template->hasBlock($name)) {
                 return true;
@@ -97,7 +102,8 @@ class JqGridExtension extends \Twig_Extension {
      * @return \Twig_TemplateInterface[]
      * @throws \Exception
      */
-    private function getTemplates() {
+    private function getTemplates()
+    {
         if (empty($this->templates)) {
             $this->templates[] = $this->environment->loadTemplate($this::DEFAULT_TEMPLATE);
         }
@@ -105,7 +111,8 @@ class JqGridExtension extends \Twig_Extension {
         return $this->templates;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return 'eps_jq_grid_twig_extension';
     }
 

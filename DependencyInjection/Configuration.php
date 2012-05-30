@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                ->scalarNode('datepickerphp_format')->defaultValue('d/m/y')->end()
             ->end()
         ;
-        
+
         return $treeBuilder;
     }
 }

@@ -116,6 +116,7 @@ class Grid extends GridTools
         $col->setName($name);
         $col->setColModel($colmodel);
         $this->columns[] = $col;
+
         return $col;
     }
 
@@ -131,6 +132,7 @@ class Grid extends GridTools
             $tabColNames[] = '\'' . $c->getName() . '\'';
         }
         $colnames = implode(', ', $tabColNames);
+
         return $colnames;
     }
 
@@ -216,6 +218,7 @@ class Grid extends GridTools
             $response = new Response();
             $response->setContent($content);
             $response->headers->set('Content-Type', 'application/json');
+
             return $response;
         } else {
             return array(
@@ -317,6 +320,7 @@ class Grid extends GridTools
             $opts = substr($opts, 1);
             $opts = substr($opts, 0, strlen($opts) - 1);
             $opts = $opts . ', ';
+
             return $opts;
         } else {
             return $this->navOptions;
@@ -331,6 +335,7 @@ class Grid extends GridTools
             $opts = substr($opts, 1);
             $opts = substr($opts, 0, strlen($opts) - 1);
             $opts = $opts . ', ';
+
             return $opts;
         } else {
             return $this->options;
