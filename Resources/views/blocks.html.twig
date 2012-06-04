@@ -1,13 +1,15 @@
-{% block gridjs %}
+{% block jqgrid_h %}
 {% spaceless %}
 <div id="{{grid.name|raw}}_wrapper" {% if grid.hideifempty %}style="display: none;"{% endif %}>
     <table class="eps_jqgrid" id="{{grid.name|raw}}"></table>
     <div id="pager_{{grid.name|raw}}"></div>
     <hr/>
 </div>
+{% endspaceless %}
+{% endblock jqgrid_h %}
 
-
-    <script type="text/javascript">
+{% block jqgrid_j %}
+ <script type="text/javascript">
     $(document).ready(function() {
         var $configs = $.extend({
                 minDate: new Date(2007, 0, 1),
@@ -63,6 +65,11 @@
         });
 
     });
-    </script>
-{% endspaceless %}
-{% endblock gridjs %}
+</script>
+{% endblock jqgrid_j %}
+
+
+{% block jqgrid %}
+    {{ block("jqgrid_h") }}
+    {{ block("jqgrid_j") }}
+{% endblock jqgrid %}    
