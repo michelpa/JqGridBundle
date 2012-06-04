@@ -4,9 +4,14 @@ JqGridBundle
 JqGrid implementation for Symfony2.
 
 
-**Compatibility**: Tested with Symfony 2.0.12
+**Compatibility**: Tested with Symfony > 2.0.12
 
 [Full working demo](https://github.com/michelpa/demoJqGrid)
+
+CHANGELOG
+---------
+
+2012-06-04: change rendering function jqgrid_js to jqgrid
 
 
 Installation
