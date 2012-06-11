@@ -64,7 +64,12 @@
             jQuery("#{{ grid.name|raw }}")[0].clearToolbar();
         });
 
+        $("#{{ grid.name|raw}}").setGridWidth($("#{{grid.name|raw}}_wrapper").width());
     });
+
+    $(window).bind('resize', function() {
+        $("#{{ grid.name|raw}}").setGridWidth($("#{{grid.name|raw}}_wrapper").width());
+    }).trigger('resize');
 </script>
 {% endblock jqgrid_j %}
 
