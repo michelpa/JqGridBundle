@@ -11,7 +11,7 @@ JqGrid implementation for Symfony2.
 CHANGELOG
 ---------
 
-2012-06-04: change rendering function jqgrid_js to jqgrid
+2012-06-04: BC break - change rendering function jqgrid_js to jqgrid
 
 
 Installation
