@@ -4,6 +4,7 @@ namespace EPS\JqGridBundle\Grid;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\Query;
+use EPS\JqGridBundle\FilterMapper\FilterMapperFactory;
 
 //use Doctrine\ORM\Query;
 
@@ -21,47 +22,85 @@ class Grid extends GridTools
     private $container;
 
     /**
-     * @var \Symfony\Component\HttpFoundation\Session;
+     * @var \Knp\Component\Pager\Paginator
      */
-    private $session;
-    private $paginator;
-
-    /**
-     * @var \Symfony\Component\HttpFoundation\Request
-     */
-    private $request;
-    private $onlyData;
-    private $em;
+    protected $paginator;
 
     /**
      * @var \Symfony\Component\Routing\Router
      */
-    private $router;
-    private $templating;
+    protected $router;
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
+    protected $request;
+
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
+    protected $em;
+
+    /**
+     * @var \Twig_TemplateInterface
+     */
+    protected $templating;
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\Session;
+     */
+    private $session;
+
+    /**
+     * @var array
+     */
+    protected $columns;
+
+    /**
+     * @var string
+     */
+    protected $caption;
+
+    private $onlyData;
+
     private $qb;
     private $name;
-    private $caption;
-    private $columns;
     private $options;
     private $routeforced;
     private $hideifempty;
     private $navOptions;
-    private $datePickerFormat;
-    private $datePickerPhpFormat;
+
+    /**
+     * @var string
+     */
+    protected $datePickerFormat;
+
+    /**
+     * @var string
+     */
+    protected $datePickerPhpFormat;
 
     /**
      * @var string
      */
     private $hash;
 
-    public function __construct($container, $paginator)
+    /**
+     * @var \EPS\JqGridBundle\Grid\Grid
+     */
+    protected $subGrid;
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\Container $container
+     */
+    public function __construct($container)
     {
         $this->container = $container;
 
         $this->router = $this->container->get('router');
         $this->request = $this->container->get('request');
         $this->session = $this->request->getSession();
-        $this->paginator = $paginator;
+        $this->paginator = $this->container->get('knp_paginator');
         $this->em = $this->container->get('doctrine.orm.entity_manager');
         $this->templating = $this->container->get('templating');
         $this->columns = array();
@@ -83,26 +122,51 @@ class Grid extends GridTools
         unset($this->routeParameters['_route']);
     }
 
+    /**
+     * @param string $format A Jquery Datepicker Plugin date format
+     *
+     * @see http://jqueryui.com/demos/datepicker/
+     */
     public function setDatePickerFormat($format)
     {
         $this->datePickerFormat = $format;
     }
 
+    /**
+     * @return string A Jquery Datepicker Plugin date format
+     *
+     * @see http://jqueryui.com/demos/datepicker/
+     */
     public function getDatePickerFormat()
     {
         return $this->datePickerFormat;
     }
 
+    /**
+     * @param string $format A PHP date format
+     *
+     * @see http://br2.php.net/manual/en/function.date.php
+     */
     public function setDatePickerPhpFormat($format)
     {
         $this->datePickerPhpFormat = $format;
     }
 
+    /**
+     * @return string A PHP date format
+     *
+     * @see http://br2.php.net/manual/en/function.date.php
+     */
     public function getDatePickerPhpFormat()
     {
         return $this->datePickerPhpFormat;
     }
 
+    /**
+     * Set the query builder that will be used to get data to the grid
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder
+     */
     public function setSource(QueryBuilder $qb)
     {
         $this->qb = $qb;
@@ -120,6 +184,11 @@ class Grid extends GridTools
         return $col;
     }
 
+    /**
+     * Return an array with column definitions
+     *
+     * @return array
+     */
     public function getColumns()
     {
         return $this->columns;
@@ -149,11 +218,17 @@ class Grid extends GridTools
         return $colmodels;
     }
 
+    /**
+     * @param string $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
@@ -169,11 +244,17 @@ class Grid extends GridTools
         return $this->hideifempty;
     }
 
+    /**
+     * @param string $caption
+     */
     public function setCaption($caption)
     {
         $this->caption = $caption;
     }
 
+    /**
+     * @return string
+     */
     public function getCaption()
     {
         return $this->caption;
@@ -193,6 +274,9 @@ class Grid extends GridTools
         $this->routeforced = $route;
     }
 
+    /**
+     * @return bool If true (Ajax Request), returns json. Else (Regular request), renders html
+     */
     public function isOnlyData()
     {
         return $this->onlyData;
@@ -204,10 +288,39 @@ class Grid extends GridTools
         $this->session->set($this->getHash(), 'Y');
     }
 
+    /**
+     * @return string A hash that identifies the grid
+     */
     public function getHash()
     {
         return $this->hash;
     }
+
+    /**
+     * @param \EPS\JqGridBundle\Grid $grid
+     */
+    public function setSubGrid(\EPS\JqGridBundle\Grid $grid)
+    {
+        $this->subGrid = $grid;
+    }
+
+    /**
+     * @return \EPS\JqGridBundle\Grid
+     */
+    public function getSubGrid()
+    {
+        return $this->subGrid;
+    }
+    
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getQueryBuilder()
+    {
+        return $this->qb;
+    }
+    
+    
 
     public function render()
     {
@@ -269,9 +382,11 @@ class Grid extends GridTools
                     } elseif ($c->getFieldValue()) {
                         $val[] = $c->getFieldValue();
                     } elseif ($c->getFieldTwig()) {
-                        $val[] = $this->templating->render($c->getFieldTwig(), array(
-                                      'ligne' => $row
-                                      ));
+                        $val[] = $this->templating
+                                      ->render($c->getFieldTwig(),
+                                        array(
+                                            'ligne' => $row
+                                        ));
                     } else {
                         $val[] = ' ';
                     }
@@ -289,9 +404,9 @@ class Grid extends GridTools
     public function setDefaultOptions()
     {
         $this->options = array(
-            'height' => '100%', 'rowNum' => 10, 'rowList' => array(
-                10, 20, 30
-            ), 'datatype' => 'json', 'viewrecords' => true,
+                'height' => '100%', 'rowNum' => 10, 'rowList' => array(
+                    10, 20, 30
+                ), 'datatype' => 'json', 'viewrecords' => true,
         );
 
         $this->navOptions = array(
@@ -365,111 +480,10 @@ class Grid extends GridTools
 
         if ($rules) {
             foreach ($rules as $rule) {
-                foreach ($this->columns as $c) {
-                    if ($c->getFieldIndex() == $rule['field']) {
-
-                        $op = $rule['op'];
-
-                        $parameter = $rule['data'];
-
-                        if ($c->getFieldFormatter() == 'date') {
-                            $date = \DateTime::createFromFormat($this->datePickerPhpFormat, $rule['data']);
-                            $this->qb->andWhere($this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}"));
-                            $this->qb->setParameter($c->getFieldName(), $date->format('Y-m-d'));
-                        } elseif ($c->getFieldHaving()) {
-                            $this->qb->having($c->getFieldHaving() . " = :{$c->getFieldName()}");
-                            $this->qb->setParameter($c->getFieldName(), $rule['data']);
-                        } else {
-
-                            switch ($rule['op']) {
-                                case 'eq':
-                                    $where = $this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    break;
-                                case 'ne':
-                                    $where = $this->qb->expr()->neq($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    break;
-                                case 'lt':
-                                    $where = $this->qb->expr()->lt($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    break;
-                                case 'le':
-                                    $where = $this->qb->expr()->lte($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    break;
-                                case 'gt':
-                                    $where = $this->qb->expr()->gt($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    break;
-                                case 'ge':
-                                    $where = $this->qb->expr()->gte($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    break;
-                                case 'bw':
-                                    $where = $this->qb->expr()->like($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    $parameter = $rule['data'] . '%';
-                                    break;
-                                case 'bn':
-                                    $where = $c->getFieldIndex() . " NOT LIKE :{$c->getFieldName()}";
-                                    $parameter = $rule['data'] . '%';
-                                    break;
-                                case 'nu':
-                                    $where = $this->qb->expr()->orX($this->qb->expr()->eq($c->getFieldIndex(), ":{$c->getFieldName()}"), $c->getFieldIndex() . ' IS NULL');
-                                    $parameter = '';
-                                    break;
-                                case 'nn':
-                                    $where = $this->qb->expr()->andX($this->qb->expr()->neq($c->getFieldIndex(), ":{$c->getFieldName()}"), $c->getFieldIndex() . ' IS NOT NULL');
-
-                                    $parameter = '';
-                                    break;
-                                case 'in':
-                                    if (false !== strpos($rule['data'], ',')) {
-                                        $where = $this->qb->expr()->in($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                        $parameter = explode(',', $rule['data']);
-                                    } elseif (false !== strpos($rule['data'], '-')) {
-                                        $where = $this->qb->expr()->between($c->getFieldIndex(), ":start", ":end");
-                                        list($start, $end) = explode('-', $rule['data']);
-                                        $this->qb->setParameter('start', $start);
-                                        $this->qb->setParameter('end', $end);
-                                        unset($parameter);
-                                    }
-                                    break;
-                                case 'ni':
-                                    if (false !== strpos($rule['data'], ',')) {
-                                        $where = $this->qb->expr()->notIn($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                        $parameter = explode(',', $rule['data']);
-                                    } elseif (false !== strpos($rule['data'], '-')) {
-                                        $where = $this->qb->expr()->orX($c->getFieldIndex() . "< :start", $c->getFieldIndex() . "> :end");
-                                        list($start, $end) = explode('-', $rule['data']);
-                                        $this->qb->setParameter('start', $start);
-                                        $this->qb->setParameter('end', $end);
-                                        unset($parameter);
-                                    }
-
-                                    break;
-                                case 'ew':
-                                    $where = $this->qb->expr()->like($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    $parameter = '%' . $rule['data'];
-                                    break;
-                                case 'en':
-                                    $where = $c->getFieldIndex() . " NOT LIKE :{$c->getFieldName()}";
-                                    $parameter = '%' . $rule['data'];
-                                    break;
-                                case 'nc':
-                                    $where = $c->getFieldIndex() . " NOT LIKE :{$c->getFieldName()}";
-                                    $parameter = '%' . $rule['data'] . '%';
-                                    break;
-                                default: //case 'cn'
-                                    $where = $this->qb->expr()->like($c->getFieldIndex(), ":{$c->getFieldName()}");
-                                    $parameter = '%' . $rule['data'] . '%';
-                            }
-
-                            if ('OR' == $groupOp) {
-                                $this->qb->orWhere($where);
-                            } else {
-                                $this->qb->andWhere($where);
-
-                            }
-
-                            if (isset($parameter)) {
-                                $this->qb->setParameter($c->getFieldName(), $parameter);
-                            }
-                        }
+                foreach ($this->columns as $column) {
+                    if ($column->getFieldIndex() == $rule['field']) {
+                        $filterMapper = FilterMapperFactory::getFilterMapper($this, $column);
+                        $filterMapper->execute($rule, $groupOp);
                     }
                 }
             }

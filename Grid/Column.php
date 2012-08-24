@@ -22,26 +22,44 @@ class Column extends GridTools
         }
     }
 
+    /**
+     * @param string $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @param array $columnModel
+     */
     public function setColModel(array $colmodel)
     {
         $this->colmodel = $colmodel;
     }
 
+    /**
+     * @return array
+     */
     public function getColModel()
     {
         return $this->colmodel;
     }
 
+    /**
+     * Generic getter for any jqgrid column model attribute
+     *
+     * @param string $fieldname
+     * @return mixed
+     */
     private function getField($fieldname)
     {
         if (array_key_exists($fieldname, $this->colmodel)) {
@@ -51,41 +69,70 @@ class Column extends GridTools
         }
     }
 
+    /**
+     * @return string
+     */
     public function getFieldName()
     {
         return $this->getField('name');
     }
 
+    /**
+     * @return mixed
+     */
     public function getFieldValue()
     {
         return $this->getField('value');
     }
 
+    /**
+     * @return string
+     */
     public function getFieldIndex()
     {
         return $this->getField('index');
     }
 
+    /**
+     * @return string
+     */
     public function getFieldTwig()
     {
         return $this->getField('twig');
     }
 
+    /**
+     * @return string
+     */
     public function getFieldHaving()
     {
         return $this->getField('having');
     }
 
+    /**
+     * @return string
+     */
     public function getFieldAutocomplete()
     {
         return $this->getField('autocomplete');
     }
 
+    /**
+     * @return string
+     */
     public function getFieldFormatter()
     {
         return $this->getField('formatter');
     }
 
+    /**
+     * Decorate specific column model attributes with
+     * values expected to build the view
+     *
+     * @param string $prefix
+     *
+     * @return array
+     */
     public function getColModelJson($prefix = '')
     {
         $model = $this->colmodel;

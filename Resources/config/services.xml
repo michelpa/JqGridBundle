@@ -13,7 +13,6 @@
 	<services>
 		<service id="eps_jq_grid" class="%eps_jq_grid.base.class%" scope="prototype">
 			<argument type="service" id="service_container" />
-			<argument type="service" id="knp_paginator" />
 			<call method="setDatePickerFormat">
 				<argument>%eps_jq_grid.datepicker_format%</argument>
 			</call>
