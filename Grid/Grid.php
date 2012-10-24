@@ -265,8 +265,8 @@ class Grid extends GridTools
         if ($this->routeforced != '') {
             return $this->routeforced;
         } else {
-            return $this->router->generate($this->request->get('_route'));
-        }
+            return $currentUrl = $this->request->getUri();
+	}
     }
 
     public function setRouteForced($route)
