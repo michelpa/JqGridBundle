@@ -266,7 +266,7 @@ class Grid extends GridTools
             return $this->routeforced;
         } else {
             return $currentUrl = $this->request->getUri();
-	}
+        }
     }
 
     public function setRouteForced($route)
@@ -311,7 +311,7 @@ class Grid extends GridTools
     {
         return $this->subGrid;
     }
-    
+
     /**
      * @return \Doctrine\ORM\QueryBuilder
      */
@@ -319,8 +319,8 @@ class Grid extends GridTools
     {
         return $this->qb;
     }
-    
-    
+
+
 
     public function render()
     {
