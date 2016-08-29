@@ -10,7 +10,7 @@
 	</parameters>
 
 	<services>
-		<service id="eps_jq_grid" class="%eps_jq_grid.base.class%" scope="prototype">
+		<service id="eps_jq_grid" class="%eps_jq_grid.base.class%" shared ="false">
 			<argument type="service" id="service_container" />
 			<call method="setDatePickerFormat">
 				<argument>%eps_jq_grid.datepicker_format%</argument>
@@ -24,5 +24,4 @@
 			<argument type="service" id="router" />
 		</service>
 	</services>
-
 </container>
