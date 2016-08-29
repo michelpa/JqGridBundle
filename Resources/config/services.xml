@@ -6,8 +6,7 @@
 
 	<parameters>
 		<parameter key="eps_jq_grid.base.class">EPS\JqGridBundle\Grid\Grid</parameter>
-		<parameter key="eps_jq_grid.twig_extension.class">EPS\JqGridBundle\Twig\JqGridExtension
-		</parameter>
+		<parameter key="eps_jq_grid.twig_extension.class">EPS\JqGridBundle\Twig\JqGridExtension</parameter>
 	</parameters>
 
 	<services>
@@ -19,14 +18,11 @@
 			<call method="setDatePickerPhpFormat">
 				<argument>%eps_jq_grid.datepickerphp_format%</argument>
 			</call>
-
 		</service>
-		<service id="eps_jq_grid.twig_extension" class="%eps_jq_grid.twig_extension.class%"
-			public="false">
+		<service id="eps_jq_grid.twig_extension" class="%eps_jq_grid.twig_extension.class%" public="false">
 			<tag name="twig.extension" />
 			<argument type="service" id="router" />
 		</service>
-
 	</services>
 
 </container>

@@ -12,7 +12,7 @@
 namespace EPS\JqGridBundle\Twig;
 use EPS\JqGridBundle\Grid\Grid;
 
-class JqGridExtension extends \Twig_Extension
+class JqGridExtension extends \Twig_Extension implements \Twig_Extension_InitRuntimeInterface
 {
 
     const DEFAULT_TEMPLATE = 'EPSJqGridBundle::blocks.html.twig';
@@ -50,24 +50,24 @@ class JqGridExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-                'jqgrid' => new \Twig_Function_Method($this, 'renderGrid',
+                'jqgrid' => new \Twig_SimpleFunction($this, 'renderGrid',
                         array(
                             'is_safe' => array(
                                 'html'
                             )
                         )),
-                'jqgrid_js' => new \Twig_Function_Method($this, 'renderGridJs',
+                'jqgrid_js' => new \Twig_SimpleFunction($this, 'renderGridJs',
                         array(
                             'is_safe' => array(
                                 'html'
                             )
                         )),
-                'jqgrid_html' => new \Twig_Function_Method($this, 'renderGridHtml',
+                'jqgrid_html' => new \Twig_SimpleFunction($this, 'renderGridHtml',
                         array(
                             'is_safe' => array(
                                 'html'
                             )
-                        )),
+                        ))
         );
     }
 
@@ -140,6 +140,11 @@ class JqGridExtension extends \Twig_Extension
         }
 
         return $this->templates;
+    }
+
+    public function getBlockPrefix()
+    {
+        return $this->getName();
     }
 
     public function getName()
