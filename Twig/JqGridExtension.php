@@ -12,7 +12,7 @@
 namespace EPS\JqGridBundle\Twig;
 use EPS\JqGridBundle\Grid\Grid;
 
-class JqGridExtension extends \Twig_Extension implements \Twig_Extension_InitRuntimeInterface
+class JqGridExtension extends \Twig_Extension
 {
 
     const DEFAULT_TEMPLATE = 'EPSJqGridBundle::blocks.html.twig';
@@ -49,46 +49,31 @@ class JqGridExtension extends \Twig_Extension implements \Twig_Extension_InitRun
      */
     public function getFunctions()
     {
-        return array(
-                'jqgrid' => new \Twig_SimpleFunction($this, 'renderGrid',
-                        array(
-                            'is_safe' => array(
-                                'html'
-                            )
-                        )),
-                'jqgrid_js' => new \Twig_SimpleFunction($this, 'renderGridJs',
-                        array(
-                            'is_safe' => array(
-                                'html'
-                            )
-                        )),
-                'jqgrid_html' => new \Twig_SimpleFunction($this, 'renderGridHtml',
-                        array(
-                            'is_safe' => array(
-                                'html'
-                            )
-                        ))
-        );
+        return [
+                new \Twig_SimpleFunction('jqgrid', 'renderGrid',['is_safe' =>['html']]),
+                new \Twig_SimpleFunction('jqgrid_js', 'renderGridJs',['is_safe' =>['html']]),
+                new \Twig_SimpleFunction('jqgrid_html', 'renderGridHtml',['is_safe' =>['html']])
+        ];
     }
 
     public function renderGrid(Grid $grid)
     {
         if (!$grid->isOnlyData()) {
-            return $this->renderBlock('jqgrid', array('grid' => $grid));
+            return $this->renderBlock('jqgrid', ['grid' => $grid]);
         }
     }
 
     public function renderGridJs(Grid $grid)
     {
         if (!$grid->isOnlyData()) {
-            return $this->renderBlock('jqgrid_j', array('grid' => $grid));
+            return $this->renderBlock('jqgrid_j', ['grid' => $grid]);
         }
     }
 
     public function renderGridHtml(Grid $grid)
     {
         if (!$grid->isOnlyData()) {
-            return $this->renderBlock('jqgrid_h', array('grid' => $grid));
+            return $this->renderBlock('jqgrid_h', ['grid' => $grid]);
         }
     }
 
