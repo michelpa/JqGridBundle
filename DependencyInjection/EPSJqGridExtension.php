@@ -21,7 +21,7 @@ class EPSJqGridExtension extends Extension
 
         $config = array();
         foreach ($configs as $subConfig) {
-            $config = array_merge($config, $subConfig);
+            $config = array_merge($config, $subConfig ?: []);
         }
 
         $configuration = new Configuration();
