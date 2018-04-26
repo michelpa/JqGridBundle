@@ -18,12 +18,6 @@ class EPSJqGridExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-
-        $config = array();
-        foreach ($configs as $subConfig) {
-            $config = array_merge($config, $subConfig ?: []);
-        }
-
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
