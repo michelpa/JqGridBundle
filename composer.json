@@ -1,21 +1,26 @@
 {
     "name": "EPS/JqGridBundle",
     "type": "symfony-bundle",
-    "description": "JqGrid integration for Symfony2",
+    "description": "Forked version of JqGrid integration for Symfony2 and Symfony3",
     "keywords": ["datagrid","jqgrid"],
-    "homepage": "http://github.com/michelpa/JqGridBundle",
+    "homepage": "http://github.com/faizanakram99/JqGridBundle",
     "license": "MIT",
     "authors": [
         {
             "name": "Pascal MICHEL",
             "email": "michelpa@gmail.com",
             "homepage": "http://www.letuyau.net"
+        },
+        {
+            "name": "Faizan Akram",
+            "email": "hello@faizanakram.me",
+            "homepage": "http://faizanakram.me"
         }
     ],
     "require": {
         "php": ">=5.3.2",
-        "symfony/framework-bundle": "2.*",
-        "doctrine/orm":             "2.*", 
+        "symfony/framework-bundle": "3.*",
+        "doctrine/orm":             "2.*",
         "knplabs/knp-paginator-bundle": "*"
     },
      "autoload": {
